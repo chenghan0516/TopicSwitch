@@ -3,7 +3,7 @@ Data processing functions for creating intervened datasets.
 """
 import json
 import random
-from typing import List, Tuple, Dict, Any
+from typing import List, Tuple, Dict, Any, Optional
 from tqdm import tqdm
 
 from .config import RANDOM_SEED
@@ -153,3 +153,75 @@ def retrieve_session_data(
     
     return buffer.strip()
 
+
+def create_intervened_dataset(
+    data_path: str,
+    sample_num_for_each_data: int = None,
+    intervene_data_num: int = None,
+    sample_session_num: int = None,
+    limit_groups: Optional[int] = None
+) -> Tuple[List[Dict[str, Any]], List[Tuple[Dict[str, Any], ...]], List[str]]:
+    """
+    Complete pipeline for creating intervened datasets from LongMemEval data.
+    
+    This function combines all the steps:
+    1. Load data
+    2. Sample intervention haystacks
+    3. Sample sessions from each haystack
+    4. Retrieve concatenated session data
+    
+    Args:
+        data_path: Path to LongMemEval JSON file
+        sample_num_for_each_data: Number of samples per data point (uses config default if None)
+        intervene_data_num: Number of haystacks to combine (uses config default if None)
+        sample_session_num: Number of sessions per haystack (uses config default if None)
+        limit_groups: Optional limit on number of intervention groups to create
+        
+    Returns:
+        Tuple of:
+        - data: Original loaded data
+        - intervene_sampled_session_data: List of intervention groups with session indices
+        - intervened_texts: List of concatenated text strings (one per group)
+    """
+    from .config import (
+        SAMPLE_NUM_FOR_EACH_DATA,
+        INTERVENE_DATA_NUM,
+        SAMPLE_SESSION_NUM
+    )
+    
+    # Use config defaults if not provided
+    if sample_num_for_each_data is None:
+        sample_num_for_each_data = SAMPLE_NUM_FOR_EACH_DATA
+    if intervene_data_num is None:
+        intervene_data_num = INTERVENE_DATA_NUM
+    if sample_session_num is None:
+        sample_session_num = SAMPLE_SESSION_NUM
+    
+    # Step 1: Load data
+    data = load_data(data_path)
+    
+    # Step 2: Sample intervention haystacks
+    intervene_haystack_idx = sample_intervene_data(
+        len(data),
+        sample_num_for_each_data,
+        intervene_data_num
+    )
+    
+    # Limit groups if specified
+    if limit_groups:
+        intervene_haystack_idx = intervene_haystack_idx[:limit_groups]
+    
+    # Step 3: Sample sessions
+    intervene_sampled_session_data = sample_session(
+        data,
+        intervene_haystack_idx,
+        sample_session_num
+    )
+    
+    # Step 4: Retrieve concatenated texts
+    intervened_texts = []
+    for haystack_group in tqdm(intervene_sampled_session_data, desc="Retrieving session data"):
+        text = retrieve_session_data(data, haystack_group)
+        intervened_texts.append(text)
+    
+    return data, intervene_sampled_session_data, intervened_texts
