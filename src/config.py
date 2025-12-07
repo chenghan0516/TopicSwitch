@@ -22,5 +22,5 @@ MAX_NEW_TOKENS = 256
 MAX_TOKENS_PER_CHUNK = 4096
 
 # Data paths
-DEFAULT_DATA_PATH = "data/longmemeval/longmemeval_s.json"
+DEFAULT_DATA_PATH = "data/longmemeval/longmemeval_s_cleaned.json"
 

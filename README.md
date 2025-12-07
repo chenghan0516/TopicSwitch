@@ -85,7 +85,7 @@ Creates intervened datasets by concatenating multiple conversation threads to si
 
 ```bash
 python main.py prepare_data \
-    --data_path data/longmemeval/longmemeval_s.json \
+    --data_path data/longmemeval/longmemeval_s_cleaned.json \
     --output_dir output/ \
     --sample_num 1 \
     --intervene_num 2 \
@@ -155,7 +155,7 @@ Runs the complete experimental workflow end-to-end.
 
 ```bash
 python main.py full_pipeline \
-    --data_path data/longmemeval/longmemeval_s.json \
+    --data_path data/longmemeval/longmemeval_s_cleaned.json \
     --output_dir output/ \
     --limit_groups 5 \
     --max_chunks 10 \
@@ -252,7 +252,7 @@ See `IMPLEMENTATION_PLAN.md` for detailed roadmap.
 ```bash
 # 1. Prepare a small test dataset
 python main.py prepare_data \
-    --data_path data/longmemeval_s.json \
+    --data_path data/longmemeval/longmemeval_s_cleaned.json \
     --output_dir test_output/ \
     --limit_groups 2
 

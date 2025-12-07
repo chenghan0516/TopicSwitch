@@ -448,7 +448,7 @@ def main():
 **CLI Interface:**
 ```bash
 python scripts/run_pipeline.py \
-    --data_path data/longmemeval_s.json \
+    --data_path data/longmemeval/longmemeval_s_cleaned.json \
     --model_name llama-3.1-8B \
     --output_dir results/ \
     --max_samples 100
@@ -741,6 +741,7 @@ pytest>=7.4.0
 **Document Version:** 1.0  
 **Last Updated:** 2025-01-XX  
 **Status:** Planning Phase
+
 
 
 
